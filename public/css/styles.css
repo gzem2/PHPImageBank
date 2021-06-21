@@ -1,0 +1,115 @@
+.tag-list {
+    float: left;
+    height: auto;
+}
+
+.image-list {
+    margin-left: 100px;
+}
+
+.page-title {
+    margin-left: 50px;
+}
+
+.header {
+    margin-left: 50px;
+    margin-bottom: 25px;
+    /* width: 700px; */
+}
+
+a.thumb-link:hover, a.thumb-link:visited, a.thumb-link:link, a.thumb-link:active
+{
+    text-decoration: none;
+}
+
+.pagination {
+    display: inline-block;
+    margin-left: 100px;
+}
+
+.pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+  
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+  
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+.image-full {
+    margin-left: 25px;
+}
+
+.comment-area {
+    width: 300px;
+    height: 100px;
+}
+
+.comment-form {
+    position: relative;
+    max-width: 300px;
+    padding-bottom: 25px;
+    margin-left: 125px
+}
+
+.comment-button {
+    position: absolute;
+    width: 100px;
+    right: 0px;
+}
+
+.comments {
+    margin-left: 125px;
+    max-width:1200px;
+}
+
+.cm-column {
+    float: left;
+    padding: 10px;
+}
+
+.cm-username {
+    width: 3%;
+}
+
+.cm-body {
+    width: 75%
+}
+
+.cm-sep {
+    content: "";
+    clear: both;
+}
+
+.form-container {
+    height: 600px;
+    width: 600px;
+    padding: 0px;
+}
+
+.label-group {
+    height: 25px;
+    width: 200px;
+    margin-top: 10px;
+    text-align: right;
+    margin-right:15px;
+    float:left;
+}
+
+.input-group {
+    height: 25px;
+    width: 180px;
+    margin-top: 10px;
+}
+
+.submit-button {
+  position: absolute;
+  left: 222px;
+}
