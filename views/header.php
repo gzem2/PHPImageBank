@@ -33,6 +33,11 @@
                 <span>
                     <a href="/upload">Upload image</a>
                 </span>
+                <?php if (strpos($_SERVER['REQUEST_URI'], "/images/") !== false && $model->uploader_id == $_SESSION['logged_in']->id) : ?>
+                    <span>
+                        <a href="/images/delete/<?= $model->id ?>">Delete image</a>
+                    </span>
+                <?php endif ?>
                 <span>
                     <a href="/logout">Logout</a>
                 </span>
