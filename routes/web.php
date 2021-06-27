@@ -18,13 +18,15 @@ Router::get('/', [ImageController::class, 'index']);
 
 Router::post('/images', [ImageController::class, 'create']);
 
-Router::put('/images', [ImageController::class, 'update']);
-
 Router::get('/images/([0-9]*)', [ImageController::class, 'getById']);
 
 Router::get('/upload', [ImageController::class, 'upload']);
 
 Router::get('/images/delete/([0-9]*)', [ImageController::class, 'delete']);
+
+Router::get('/images/edit/([0-9]*)', [ImageController::class, 'edit']);
+
+Router::post('/images/update', [ImageController::class, 'update']);
 
 
 Router::post('/users', [UserController::class, 'create']);

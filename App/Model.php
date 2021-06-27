@@ -209,7 +209,42 @@ class Model
         $sth->execute($this->values);
 
         $this->setFieldValue("id", $this->connect()->lastInsertId());
-        return true;
+        return $this;
+    }
+
+    /**
+     * Update model
+     * @return Model instance or false if it fails to validate
+     */
+    public function update()
+    {
+        if (!$this->validate()) {
+            return false;
+        }
+
+        foreach ($this->values as $k => $v) {
+            if ($v) {
+                if(is_string($v)) {
+                    $this->values[$k] = htmlspecialchars($v, ENT_NOQUOTES);
+                } else {
+                    $this->values[$k] = $v;
+                }
+            }
+        }
+
+        $sql = "UPDATE " . static::$table . " SET ";
+
+        foreach ($this->values as $k => $v) {
+            $sql = $sql . $k . "=:" . $k . ", ";
+        }
+        $sql = rtrim($sql, ", ");
+
+        $sql = $sql . " WHERE id=:id";
+
+        $sth = $this->connect()->prepare($sql);
+        $sth->execute($this->values);
+
+        return $this;
     }
 
     /**

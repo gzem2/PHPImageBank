@@ -231,19 +231,116 @@ class ImageController extends Controller
         }
     }
 
+
+    /**
+     * Get tags by image id
+     * @param int $id image id
+     * @return array of tags
+     */
+    public function getImageTagsById(int $id)
+    {
+        $tags = $this->getImageTagsByIdCounted($id);
+        $tagsPlain = [];
+        foreach ($tags as $k => $v) {
+            array_push($tagsPlain, $v[1]);
+        }
+
+        return $tagsPlain;
+    }
+
+    /**
+     * Get tags by image id with tag count
+     * @param int $id image id
+     * @return array of tags with keys being tag count
+     */
+    public function getImageTagsByIdCounted(int $id)
+    {
+        $imgtags = [];
+        $itags = ImageTag::getByField("image_id", $id)->data();
+        if ($itags) {
+            foreach ($itags as $itag) {
+                if (!isset($imgtags[$itag->tag_id])) {
+                    $t = Tag::getByField("id", $itag->tag_id)->one();
+                    if ($t) {
+                        $imgtags[$itag->tag_id] = [1, $t->tagname];
+                    }
+                } else {
+                    $imgtags[$itag->tag_id][0]++;
+                }
+            }
+        }
+
+        return $imgtags;
+    }
+
     /**
      * Update existing image or show error if user is not authorized/image doesnt exist
      * @param int $id image id
      * @param array $data image table row
      * @return Image
      */
-    public function update(int $id, array $data)
+    public function update(array $data)
     {
         if (isset($_SESSION['logged_in'])) {
             $image = Image::getByField("id", $data["id"])->one();
             if ($image) {
                 if ($image->uploader_id == $_SESSION['logged_in']->id || $_SESSION['logged_in']->id == 1) {
-                    return $this->create($data);
+                    
+                    if (isset($data["tags"])) {
+                        $tags = explode(",", $data["tags"]);
+                        unset($data["tags"]);
+                        foreach ($tags as $k => $v) {
+                            $tags[$k] = trim($v);
+                        }
+                    }
+
+                    // Handle old imagetags, if they not present in new tags array
+                    $oldImgTags = $this->getImageTagsByIdCounted(intval($data["id"]));
+
+                    if ($oldImgTags) {
+                        $oldTags = [];
+                        foreach ($oldImgTags as $k => $v) {
+                            $oldTags[$v[1]] = $k;
+                        }
+                    
+                        $tagsForRemoval = array_diff(array_keys($oldTags), $tags);
+                        $tagsForRemovalIds = [];
+                        foreach($tagsForRemoval as $tfr) {
+                            array_push($tagsForRemovalIds, $oldTags[$tfr]);
+                        }
+
+                        // New tags to create
+                        $tags = array_diff($tags, array_keys($oldTags));
+
+                        // Delete old tags..
+                        foreach ($tagsForRemoval as $t) {
+                            $itags = ImageTag::getByField("image_id", $data["id"])->data();
+                            foreach ($itags as $itag) {
+                                if (in_array($itag->tag_id, $tagsForRemovalIds)) {
+                                    ImageTag::deleteByField("id", $itag->id);
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (!empty($tags)) {
+                        // Create new tags..
+                        foreach ($tags as $t) {
+                            $tag = Tag::getByField("tagname", $t)->one();
+                            if (!$tag) {
+                                $tag = Tag::fromRow(["tagname" => $t, "description" => "New", "creator_id" => $_SESSION['logged_in']->id]);
+                                $tag->save();
+                            }
+            
+                            $imgtag = ImageTag::fromRow(["image_id" => $data["id"], "tag_id" => $tag->id]);
+                            $imgtag->save();
+                        }
+                    }
+
+                    unset($data["tags"]);
+                    $newimage = Image::fromRow($data);
+                    $newimage->update();
+                    Router::redirect("/images/" . $newimage->id);
                 } else {
                     return $this->error("Not authorized", 401);
                 }
@@ -329,5 +426,32 @@ class ImageController extends Controller
                 'title' => "Upload"
             ]
         );
+    }
+
+     /**
+     * Show image edit form
+     * @return view
+     */
+    public function edit(int $id)
+    {
+        $image = Image::getByField('id', $id)->one();
+        if (!$image) {
+            return $this->error("Image not found", 400);
+        }
+
+        $imgtags = $this->getImageTagsById($id);
+
+        if ($image->uploader_id == $_SESSION['logged_in']->id || $_SESSION['logged_in']->id == 1) {
+            return $this->view(
+                "image-edit",
+                [
+                    'model' => $image,
+                    'tags' => $imgtags,
+                    'title' => "Edit " . $image->imagename
+                ]
+            );
+        } else {
+            return $this->error("Not authorized", 401);
+        }
     }
 }

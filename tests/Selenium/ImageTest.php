@@ -68,12 +68,12 @@ final class ImageTest extends SeleniumTestCase
         $this->driver->findElement(WebDriverBy::name('comment'))
             ->sendKeys("Test comment")
             ->submit();
-        
+
         $comment = $this->driver->findElement(
             WebDriverBy::cssSelector('.comments > div > div.cm-column.cm-body')
         );
         $this->assertStringContainsString("Test comment", $comment->getText());
-        
+
         return $data;
     }
 
@@ -101,11 +101,11 @@ final class ImageTest extends SeleniumTestCase
         $this->driver->get($this->website . '/?tags=tag_c');
         $image_bc_link = $this->driver->findElement(WebDriverBy::cssSelector('.thumb-link'))->getattribute('href');
         $this->assertEquals($this->website . '/images/' . $data['image_bc_id'], $this->website . $image_bc_link);
-        
+
         $this->driver->get($this->website . '/?tags=tag_b');
         $images = $this->driver->findElements(WebDriverBy::cssSelector('.thumb-link'));
         $links = [];
-        foreach($images as $img) {
+        foreach ($images as $img) {
             array_push($links, $img->getattribute('href'));
         }
         $this->assertContains("/images/" . $data["image_id"], $links);
@@ -116,6 +116,42 @@ final class ImageTest extends SeleniumTestCase
 
     /**
      * @depends testCategory
+     */
+    public function testEdit($data)
+    {
+        $this->signIn($data);
+
+        $e = explode("/", $data['link']);
+        array_splice($e, 4, 0, ["edit"]);
+        $editLink = implode("/", $e);
+        $this->driver->get($editLink);
+
+        $this->driver->findElement(WebDriverBy::id('imagename'))
+            ->clear()
+            ->sendKeys("Edited title")
+            ->submit();
+        $this->driver->get($data['link']);
+        $title = $this->driver->findElement(
+            WebDriverBy::xpath('/html/body/div[1]/h3')
+        );
+        $this->assertStringContainsString("- Edited title", $title->getText());
+
+        $this->driver->get($editLink);
+        $this->driver->findElement(WebDriverBy::id('tags'))
+            ->clear()
+            ->sendKeys("tag_c")
+            ->submit();
+        $this->driver->get($data['link']);
+        $title = $this->driver->findElement(
+            WebDriverBy::xpath('/html/body/div[3]/div[1]/ul/li[1]/a')
+        );
+        $this->assertStringContainsString("tag_c", $title->getText());
+
+        return $data;
+    }
+
+    /**
+     * @depends testEdit
      */
     public function testDelete($data)
     {

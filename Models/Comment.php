@@ -13,6 +13,8 @@ class Comment extends Model
 {
     public static string $table = "comments"; /**< table name in DB */
 
+    public static array $fields = [];
+
     /**
      * Init table fields
      */

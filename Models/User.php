@@ -13,6 +13,8 @@ class User extends Model
 {
     public static string $table = "users"; /**< table name in DB */
 
+    public static array $fields;
+
     /**
      * Init table fields
      */

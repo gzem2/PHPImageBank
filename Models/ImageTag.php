@@ -18,6 +18,8 @@ class ImageTag extends Model
     public static string $table = "imagetags";
     /**< table name in DB */
 
+    public static array $fields = [];
+
     /**
      * Init table fields
      */

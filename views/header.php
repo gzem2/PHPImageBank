@@ -35,6 +35,9 @@
                 </span>
                 <?php if (strpos($_SERVER['REQUEST_URI'], "/images/") !== false && $model->uploader_id == $_SESSION['logged_in']->id) : ?>
                     <span>
+                        <a href="/images/edit/<?= $model->id ?>">Edit image</a>
+                    </span>
+                    <span>
                         <a href="/images/delete/<?= $model->id ?>">Delete image</a>
                     </span>
                 <?php endif ?>

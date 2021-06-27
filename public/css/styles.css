@@ -113,3 +113,15 @@ a.thumb-link:hover, a.thumb-link:visited, a.thumb-link:link, a.thumb-link:active
   position: absolute;
   left: 222px;
 }
+
+.form-group-hidden {
+    display: none;
+}
+
+.form-edit {
+  height:0;
+}
+
+.thumb-edit {
+margin-left: 215px;
+}

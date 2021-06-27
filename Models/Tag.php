@@ -13,6 +13,8 @@ class Tag extends Model
 {
     public static string $table = "tags"; /**< table name in DB */
 
+    public static array $fields = [];
+
     /**
      * Init table fields
      */

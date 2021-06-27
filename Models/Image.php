@@ -13,6 +13,8 @@ class Image extends Model
 {
     public static string $table = "images"; /**< table name in DB */
 
+    public static array $fields = [];
+
     /**
      * Init table fields
      */
